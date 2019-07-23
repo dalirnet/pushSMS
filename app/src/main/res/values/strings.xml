@@ -7,4 +7,10 @@
     <string name="action_permissions">Permissions</string>
     <string name="please_grant_permission">Please Grant Permission[s]</string>
     <string name="permission_granted">Permission[s] Granted</string>
+    <string name="set_btn">Save</string>
+    <string name="http_url">http://</string>
+    <string name="secret_key">SecretKey</string>
+    <string name="start">Start Process</string>
+    <string name="number">Number</string>
+    <string name="input_error">Please Fill Input[s]</string>
 </resources>

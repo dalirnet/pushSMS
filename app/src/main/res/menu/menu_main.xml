@@ -8,11 +8,6 @@
         android:title="@string/action_permissions"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_git"
-        android:orderInCategory="100"
-        android:title="@string/action_git"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/action_author"
         android:orderInCategory="100"
         android:title="@string/action_author"
