@@ -1,15 +1,20 @@
 package com.dalirnet.pushsms;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.provider.Settings;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,10 +46,26 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
+
+
+        if (id == R.id.action_permissions) {
+            if (checkSelfPermission(Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.this, R.string.please_grant_permission, Toast.LENGTH_SHORT).show();
+
+                Intent settingIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getApplicationContext().getPackageName()));
+                settingIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                settingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(settingIntent);
+            } else {
+                Toast.makeText(MainActivity.this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
+            }
+        }
+
 
         if (id == R.id.action_git) {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/dalirnet"));

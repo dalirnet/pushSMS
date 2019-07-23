@@ -4,4 +4,7 @@
     <string name="action_author">Author</string>
     <string name="amir_reza_dalir"><![CDATA[AmirRezaDalir <dalirnet@gmail.com>]]></string>
     <string name="action_git">Github</string>
+    <string name="action_permissions">Permissions</string>
+    <string name="please_grant_permission">Please Grant Permission[s]</string>
+    <string name="permission_granted">Permission[s] Granted</string>
 </resources>
