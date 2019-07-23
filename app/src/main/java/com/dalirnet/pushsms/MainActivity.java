@@ -76,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
                     return;
 
                 }
-                serverRequest serverRequestInstance = new serverRequest();
-
                 Toast.makeText(MainActivity.this, R.string.start, Toast.LENGTH_SHORT).show();
                 String[] projection = new String[]{"address", "body"};
                 @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(Uri.parse("content://sms"), projection, "address LIKE '%" + numberInput.getText().toString() + "%'", null, "date DESC limit 20");
@@ -86,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
 
                         do {
-                            serverRequestInstance.send(queue, lastStatus, urlInput.getText().toString(), secretInput.getText().toString(), cursor.getString(1), cursor.getString(0));
+                            serverRequest.send(queue, lastStatus, urlInput.getText().toString(), secretInput.getText().toString(), cursor.getString(1), cursor.getString(0));
                         } while (cursor.moveToNext());
 //                        SharedPreferences.Editor editor = prefs.edit();
 //                        editor.putString("lastStatus", lastStatus.getText().toString());
