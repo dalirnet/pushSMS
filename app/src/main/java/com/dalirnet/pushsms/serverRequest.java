@@ -1,58 +1,48 @@
 package com.dalirnet.pushsms;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Build;
-import android.widget.EditText;
 
-import androidx.annotation.RequiresApi;
+import android.annotation.SuppressLint;
+import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 
-import java.io.IOException;
-
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import static android.content.Context.MODE_PRIVATE;
+import java.util.HashMap;
+import java.util.Map;
 
 class serverRequest {
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public static void send(Context context, String url, String secret, String message, String from) {
 
-        EditText lastStatusText = ((Activity) context).findViewById(R.id.lastStatus);
-        String lastStatus = "";
-        SharedPreferences.Editor editor = context.getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE).edit();
-        if ((!url.startsWith("http://") && !url.startsWith("https://")) || secret.isEmpty() || message.isEmpty() || from.isEmpty()) {
-            lastStatus = "Input Problem!";
-        } else {
-            OkHttpClient client = new OkHttpClient();
-            RequestBody formBody = new FormBody.Builder()
-                    .add("secret", secret)
-                    .add("message", message)
-                    .add("from", from)
-                    .build();
-            try {
-                Request request = new Request.Builder().url(url).post(formBody).build();
-                try (Response response = client.newCall(request).execute()) {
-                    lastStatus = "Server Response Problem!";
-                    if (response.isSuccessful()) {
-                        lastStatus = response.body().toString();
+    public static void send(RequestQueue queue, final TextView lastStatus, String url, final String secret, final String message, final String from) {
 
-                    }
-                } catch (IOException e) {
-                    lastStatus = "Connection (response) Problem!";
-                }
-            } catch (Exception e) {
-                lastStatus = "Connection (request) Problem!";
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://hook.eghamat24.com/home/index", new Response.Listener<String>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onResponse(String response) {
+                lastStatus.setText(message);
             }
-        }
-        lastStatusText.setText(lastStatus);
-        editor.putString("lastStatus", lastStatus);
-        editor.apply();
+        }, new Response.ErrorListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                lastStatus.setText("That didn't work!");
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("secret", secret);
+                params.put("message", message + System.currentTimeMillis());
+                params.put("from", from);
+                return params;
+            }
+        };
+
+        queue.add(stringRequest);
     }
 }

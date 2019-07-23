@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -27,8 +29,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        prefs = this.getSharedPreferences("MyPref", MODE_PRIVATE);
+        prefs = getSharedPreferences("MyPref", MODE_PRIVATE);
 
         lastStatus = this.findViewById(R.id.lastStatus);
         urlInput = this.findViewById(R.id.url);
@@ -76,15 +76,21 @@ public class MainActivity extends AppCompatActivity {
                     return;
 
                 }
+                serverRequest serverRequestInstance = new serverRequest();
 
                 Toast.makeText(MainActivity.this, R.string.start, Toast.LENGTH_SHORT).show();
                 String[] projection = new String[]{"address", "body"};
-                @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(Uri.parse("content://sms"), projection, "address LIKE '%" + numberInput.getText().toString() + "%'", null, "date DESC limit 40");
+                @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(Uri.parse("content://sms"), projection, "address LIKE '%" + numberInput.getText().toString() + "%'", null, "date DESC limit 20");
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
+                        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+
                         do {
-                            serverRequest.send(MainActivity.this, urlInput.getText().toString(), secretInput.getText().toString(), cursor.getString(1), cursor.getString(0));
+                            serverRequestInstance.send(queue, lastStatus, urlInput.getText().toString(), secretInput.getText().toString(), cursor.getString(1), cursor.getString(0));
                         } while (cursor.moveToNext());
+//                        SharedPreferences.Editor editor = prefs.edit();
+//                        editor.putString("lastStatus", lastStatus.getText().toString());
+//                        editor.apply();
                     }
                 }
             }
