@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Push SMS</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_author">Author</string>
+    <string name="amir_reza_dalir"><![CDATA[AmirRezaDalir <dalirnet@gmail.com>]]></string>
+</resources>
