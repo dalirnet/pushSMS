@@ -13,4 +13,5 @@
     <string name="start">Start Process</string>
     <string name="number">Number</string>
     <string name="input_error">Please Fill Input[s]</string>
+    <string name="push_all">Push Last 40 Messages</string>
 </resources>

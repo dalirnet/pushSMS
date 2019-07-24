@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.provider.Settings;
 import android.util.Log;
@@ -29,9 +30,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.concurrent.Callable;
+
 
 public class MainActivity extends AppCompatActivity {
-
 
     EditText lastStatus;
     EditText urlInput;
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         numberInput = this.findViewById(R.id.number);
         setUrl = this.findViewById(R.id.setUrl);
 
-        lastStatus.setText(prefs.getString("lastStatus", "..."));
+        lastStatus.setText(prefs.getString("lastStatus", ""));
         urlInput.setText(prefs.getString("urlInput", ""));
         secretInput.setText(prefs.getString("secretInput", ""));
         numberInput.setText(prefs.getString("numberInput", ""));
@@ -71,26 +73,33 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, R.string.please_grant_permission, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (numberInput.getText().toString().isEmpty()) {
+                if ((!urlInput.getText().toString().startsWith("http://") && !urlInput.getText().toString().startsWith("https://")) || secretInput.getText().toString().isEmpty() || numberInput.getText().toString().isEmpty()) {
                     Toast.makeText(MainActivity.this, R.string.input_error, Toast.LENGTH_SHORT).show();
                     return;
-
                 }
-                Toast.makeText(MainActivity.this, R.string.start, Toast.LENGTH_SHORT).show();
-                String[] projection = new String[]{"address", "body"};
-                @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(Uri.parse("content://sms"), projection, "address LIKE '%" + numberInput.getText().toString() + "%'", null, "date DESC limit 20");
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
 
-                        do {
-                            serverRequest.send(queue, lastStatus, urlInput.getText().toString(), secretInput.getText().toString(), cursor.getString(1), cursor.getString(0));
-                        } while (cursor.moveToNext());
-//                        SharedPreferences.Editor editor = prefs.edit();
-//                        editor.putString("lastStatus", lastStatus.getText().toString());
-//                        editor.apply();
+                Snackbar.make(findViewById(R.id.main_view), R.string.push_all, Snackbar.LENGTH_LONG).setAction("Push", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(MainActivity.this, R.string.start, Toast.LENGTH_SHORT).show();
+
+                        String[] projection = new String[]{"address", "body"};
+                        @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(Uri.parse("content://sms"), projection, "address LIKE '%" + numberInput.getText().toString() + "%'", null, "date DESC limit 40");
+                        if (cursor != null) {
+                            RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+                            while (cursor.moveToNext()) {
+                                serverRequest.send(queue, prefs, urlInput.getText().toString(), secretInput.getText().toString(), cursor.getString(1), cursor.getString(0), cursor.getCount(), cursor.getPosition() + 1, new Callable<Void>() {
+                                    @Override
+                                    public Void call() {
+                                        lastStatus.setText(prefs.getString("lastStatus", ""));
+                                        return null;
+                                    }
+                                });
+                            }
+                        }
                     }
-                }
+                }).setActionTextColor(Color.WHITE).show();
+
             }
         });
 
@@ -152,5 +161,12 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        lastStatus.setText(prefs.getString("lastStatus", ""));
     }
 }
