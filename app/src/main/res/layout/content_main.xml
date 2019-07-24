@@ -68,7 +68,7 @@
         android:id="@+id/lastStatus"
         android:layout_width="318dp"
         android:layout_height="200dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="10dp"
         android:ems="10"
         android:foregroundGravity="right"
         android:gravity="start|top"
