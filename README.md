@@ -1,5 +1,5 @@
 # pushSMS
-push **android** device message to server [http]
+push **android** device message to server _**[http]**_
 
 [#پیامک_به_سرور](https://github.com/dalirnet/pushSMS)
 
