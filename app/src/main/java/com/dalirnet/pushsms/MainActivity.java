@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, R.string.start, Toast.LENGTH_SHORT).show();
 
                         String[] projection = new String[]{"address", "body"};
-                        @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(Uri.parse("content://sms"), projection, "address LIKE '%" + numberInput.getText().toString() + "%'", null, "date DESC limit 40");
+                        @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(Uri.parse("content://sms"), projection, "address LIKE '%" + numberInput.getText().toString() + "%'", null, "date DESC limit 80");
                         if (cursor != null) {
                             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
                             while (cursor.moveToNext()) {
